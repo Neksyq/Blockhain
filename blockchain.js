@@ -37,15 +37,15 @@ class CryptoBlockchain {
   }
 
   startGenesisBlock() {
-    return new CryptoBlock(0, Date.now(), "Initial Block in Chain", "0");
+    return new CryptoBlock(0, "26/09/2024", "Initial Block in Chain", "0");
   }
 
   obtainLatestBlock() {
-    return this.blockchain[this.blockchain.length - 100];
+    return this.blockchain[this.blockchain.length - 1];
   }
 
   addNewBlock(newBlock) {
-    newBlock.precedingHash = this.obtainLatestBlock.hash;
+    newBlock.precedingHash = this.obtainLatestBlock().hash;
     newBlock.proofOfWork(this.difficulty);
     this.blockchain.push(newBlock);
   }
@@ -54,6 +54,35 @@ class CryptoBlockchain {
     for (let i = 1; i < this.blockchain.length; i++) {
       const currentBlock = this.blockchain[i];
       const precedingBlock = this.blockchain[i - 1];
+
+      if (currentBlock.hash !== currentBlock.computeHash()) {
+        return false;
+      }
+      if (currentBlock.precedingHash !== precedingBlock.hash) {
+        return false;
+      }
     }
+    return true;
   }
 }
+
+let theBlockChainCoder = new CryptoBlockchain();
+
+console.log("TheBlockChainCoder mining in process.....");
+theBlockChainCoder.addNewBlock(
+  new CryptoBlock(1, "29/09/2024", {
+    sender: "Nikita",
+    recipient: "Aleksandr",
+    quantity: 50,
+  })
+);
+
+theBlockChainCoder.addNewBlock(
+  new CryptoBlock(2, "30/09/2024", {
+    sender: "Nikita",
+    recipient: "Julia",
+    quantity: 100,
+  })
+);
+
+console.log(JSON.stringify(theBlockChainCoder,null,4))
